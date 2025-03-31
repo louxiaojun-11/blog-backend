@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lxj.myblog.mapper.BlogMapper">
+
+    <select id="getBlogListByUserId" resultType="com.lxj.myblog.domain.vo.BlogVO"
+            parameterType="java.lang.Integer">
+        select * from blog_post where user_id = #{userId}
+    </select>
+    <select id="getAuthor" resultType="com.lxj.myblog.domain.vo.AuthorVO" parameterType="java.lang.Integer">
+        select user_id,username,avatar from users where user_id = #{userId};
+    </select>
+</mapper>
