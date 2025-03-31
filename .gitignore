@@ -35,5 +35,3 @@ build/
 # 忽略特定路径的 application.yaml
 src/main/resources/application.yaml
 
-#userservice
-src/main/java/com/lxj/myblog/service/UserService.java
