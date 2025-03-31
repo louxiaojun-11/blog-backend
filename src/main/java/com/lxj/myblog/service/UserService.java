@@ -9,7 +9,7 @@ public interface UserService {
     User login(UserLoginDTO userLoginDTO);
 
 
-    void update(UserInfoDTO userInfoDTO);dd
+    void update(UserInfoDTO userInfoDTO);
 
     String getPasswordByUserId(Integer userId);
 
