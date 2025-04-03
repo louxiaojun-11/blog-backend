@@ -47,5 +47,10 @@ public interface BlogMapper {
     @Insert("insert into blog_comment (blog_id, user_id, content) values (#{blogId}, #{userId}, #{content})")
     void addComment(CommentDTO commentDTO);
 
-
+    @Select("select * from blog_post order by created_at desc")
+    List<BlogVO> list();
+    @Select("select likes from blog_post where id = #{id}")
+    Integer getLikesAmount(Integer id);
+    @Select("select comments from blog_post where id = #{id}")
+    Integer getCommentsAmount(Integer id);
 }

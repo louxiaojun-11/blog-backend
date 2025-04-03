@@ -2,6 +2,7 @@ package com.lxj.myblog.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.lxj.myblog.context.BaseContext;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.Blog;
@@ -13,13 +14,22 @@ import com.lxj.myblog.mapper.BlogMapper;
 import com.lxj.myblog.result.PageResult;
 import com.lxj.myblog.service.BlogService;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.elasticsearch.core.SearchHit;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.data.domain.PageImpl;
 
 @Service
 @Slf4j
@@ -27,6 +37,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Autowired
     private BlogMapper blogMapper;
+    @Autowired
+    private ElasticsearchRestTemplate elasticsearchRestTemplate;
 //    @Override
 //    public List<BlogVO> getBlogListByUserId(Integer userId) {
 //        AuthorVO author = new AuthorVO();
@@ -69,9 +81,9 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public int findLike(LikeBlogDTO likeBlogDTO) {
-        if (blogMapper.findLike(likeBlogDTO)==1) {
+        if (blogMapper.findLike(likeBlogDTO) == 1) {
             return 1;
-        }else {
+        } else {
             return 0;
         }
     }
@@ -103,5 +115,52 @@ public class BlogServiceImpl implements BlogService {
         blogMapper.addComment(commentDTO);
     }
 
+    @Override
+    public List<BlogVO> list() {
+        List<BlogVO> blogList;
+        blogList = blogMapper.list();
+        blogList.forEach(blogVO -> {
+            AuthorVO author = blogMapper.getAuthor(blogVO.getUserId());
+            blogVO.setAuthor(author);
+        });
+        return blogList;
+    }
 
+    @Override
+    public PageResult searchBlogByPage(SearchBlogDTO searchBlogDTO) {
+        // 使用 MultiMatchQueryBuilder 同时在 title 和 content 字段上进行查询
+        String keyword = searchBlogDTO.getKeyword();
+        Integer page = searchBlogDTO.getPage();
+        Integer pageSize = searchBlogDTO.getPageSize();
+        // 1. 构建多字段查询
+        MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(keyword, "title", "content");
+
+        // 2. 修正页码：page-1 转换为从0开始的索引
+        PageRequest pageable = PageRequest.of(page - 1, pageSize);
+
+        // 3. 构造查询
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(multiMatchQuery)
+                .withPageable(pageable)
+                .build();
+
+        // 4. 执行查询
+        SearchHits<BlogVO> searchHits = elasticsearchRestTemplate.search(searchQuery, BlogVO.class);
+
+        // 5. 提取当前页数据
+        List<BlogVO> content = searchHits.getSearchHits().stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+        content.forEach(blogVO -> {
+           blogVO.setLikes(blogMapper.getLikesAmount(blogVO.getId()));
+           blogVO.setComments(blogMapper.getCommentsAmount(blogVO.getId()));
+        });
+
+        // 6. 获取总记录数
+        long totalHits = searchHits.getTotalHits(); // 或 searchHits.getTotalHits().value（ES 7.0+）
+
+        return new PageResult(totalHits, content);
+    }
 }
+
+

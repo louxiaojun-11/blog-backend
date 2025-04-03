@@ -65,6 +65,9 @@ public class RelationController {
     @PutMapping("/follow")
     public ApiResponse followRelation(Integer relationId){
         Integer userId = BaseContext.getCurrentId().intValue();
+        if(relationId == userId){
+            return ApiResponse.error("不能关注自己");
+        }
         relationService.followRelation(userId,relationId);
         return ApiResponse.success();
     }

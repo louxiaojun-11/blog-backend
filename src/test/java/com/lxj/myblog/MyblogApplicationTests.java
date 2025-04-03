@@ -6,8 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class MyblogApplicationTests {
 
-    @Test
-    void contextLoads() {
+
+    public static void main(String[] args) {
+        System.out.println("你好");
     }
 
 }

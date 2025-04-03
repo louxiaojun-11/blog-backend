@@ -8,6 +8,4 @@ public class AuthorVO {
     private Integer id;
     private String avatar;
     private String username;
-
-
 }

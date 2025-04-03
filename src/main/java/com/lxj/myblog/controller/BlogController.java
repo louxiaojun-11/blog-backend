@@ -1,6 +1,6 @@
 package com.lxj.myblog.controller;
 
-import com.lxj.myblog.context.BaseContext;
+
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.response.ApiResponse;
 import com.lxj.myblog.domain.vo.BlogVO;
@@ -9,7 +9,7 @@ import com.lxj.myblog.service.BlogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Page;
 import java.util.List;
 
 @RestController
@@ -57,6 +57,11 @@ public class BlogController {
     public ApiResponse addComment(@RequestBody CommentDTO commentDTO) {
         blogService.addComment(commentDTO);
         return ApiResponse.success();
+    }
+
+    @GetMapping("/searchBlogs")
+    public ApiResponse<PageResult> searchBlogByPage (SearchBlogDTO searchBlogDTO){
+        return ApiResponse.success(blogService.searchBlogByPage(searchBlogDTO));
     }
 
 }
