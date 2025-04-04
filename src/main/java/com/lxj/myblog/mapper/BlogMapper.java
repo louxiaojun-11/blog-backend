@@ -10,6 +10,7 @@ import com.lxj.myblog.domain.vo.MusicVO;
 import com.lxj.myblog.result.PageResult;
 import org.apache.ibatis.annotations.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -53,4 +54,6 @@ public interface BlogMapper {
     Integer getLikesAmount(Integer id);
     @Select("select comments from blog_post where id = #{id}")
     Integer getCommentsAmount(Integer id);
+    @Select("select * from blog_post where updated_at  >= #{minUpdateTime}")
+    List<BlogVO> listQuestionWithDelete(Date fiveMinutesAgoDate);
 }

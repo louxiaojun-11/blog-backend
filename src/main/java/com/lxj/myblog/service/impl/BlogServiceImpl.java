@@ -3,6 +3,7 @@ package com.lxj.myblog.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.lxj.myblog.Repository.BlogEsRepository;
 import com.lxj.myblog.context.BaseContext;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.Blog;
@@ -37,6 +38,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Autowired
     private BlogMapper blogMapper;
+    @Autowired
+    BlogEsRepository blogEsRepository;
     @Autowired
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
 //    @Override
@@ -77,6 +80,8 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void deleteById(Integer id) {
         blogMapper.deleteById(id);
+        //通过id删除es中的数据，因为es中没有分页，所以直接通过id删除即可。
+        blogEsRepository.deleteById(String.valueOf(id));
     }
 
     @Override

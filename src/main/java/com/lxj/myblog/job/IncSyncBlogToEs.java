@@ -4,46 +4,51 @@ import cn.hutool.core.collection.CollUtil;
 import com.lxj.myblog.domain.dto.BlogEsDTO;
 import com.lxj.myblog.domain.vo.BlogVO;
 import com.lxj.myblog.esdao.BlogEsDao;
-import com.lxj.myblog.service.BlogService;
+import com.lxj.myblog.mapper.BlogMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
-//若要启用全量同步,去除下方@Component注解即可
-//@Component
+import java.util.Date;
+@Component
 @Slf4j
-public class FullSyncBlogToEs implements CommandLineRunner {
+public class IncSyncBlogToEs  {
 
     @Autowired
-    private BlogService blogService;
+    private BlogMapper blogMapper;
 
     @Autowired
-    private BlogEsDao blogEsDao;
+    private  BlogEsDao blogEsDao;
 
-    @Override
-    public void run(String... args) {
-        // 全量获取题目（数据量不大的情况下使用）
-        List<BlogVO> blogVOList = blogService.list();
+    /**
+     * 每分钟执行一次
+     */
+    @Scheduled(fixedRate = 20 * 1000)
+    public void run() {
+        // 查询近 5 分钟内的数据
+        long FIVE_MINUTES = 5 * 60 * 1000L;
+        Date fiveMinutesAgoDate = new Date(new Date().getTime() - FIVE_MINUTES);
+        List<BlogVO> blogVOList = blogMapper.listQuestionWithDelete(fiveMinutesAgoDate);
+        blogVOList.forEach(blogVO -> blogVO.setAuthor(blogMapper.getAuthor(blogVO.getUserId())));
         if (CollUtil.isEmpty(blogVOList)) {
+            log.info("no inc blog");
             return;
         }
-        // 转为 ES 实体类
         List<BlogEsDTO> blogEsDTOList = blogVOList.stream()
                 .map(BlogEsDTO::objToDto)
                 .collect(Collectors.toList());
-        // 分页批量插入到 ES
         final int pageSize = 500;
         int total = blogEsDTOList.size();
-        log.info("FullSyncBlogToEs start, total {}", total);
+        log.info("IncSyncQuestionToEs start, total {}", total);
         for (int i = 0; i < total; i += pageSize) {
-            // 注意同步的数据下标不能超过总数据量
             int end = Math.min(i + pageSize, total);
             log.info("sync from {} to {}", i, end);
             blogEsDao.saveAll(blogEsDTOList.subList(i, end));
         }
-        log.info("FullSyncQuestionToEs end, total {}", total);
+        log.info("IncSyncBlogToEs end, total {}", total);
     }
 }
