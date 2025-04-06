@@ -14,6 +14,7 @@ import com.lxj.myblog.result.PageResult;
 import com.lxj.myblog.service.BlogService;
 import com.lxj.myblog.service.UserService;
 import com.lxj.myblog.utils.JwtUtil;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -63,14 +64,33 @@ public class UserController {
         return ApiResponse.success(userLoginVO);
     }
     @PutMapping
-    public ApiResponse update(@RequestBody UserInfoDTO userInfoDTO) {
-        log.info("更新用户信息：{}", userInfoDTO);
-        userService.update(userInfoDTO);
-        return ApiResponse.success();
+    public ApiResponse update(@RequestBody UserInfoDTO userInfoDTO,@RequestHeader("Token") String jwtToken) {
+        try {
+            Claims claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), jwtToken);
+            Integer currentUserId = Integer.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
+            // 检查请求的用户 ID 与要更新的用户 ID 是否一致
+            if (!currentUserId.equals(BaseContext.getCurrentId().intValue())) {
+                return ApiResponse.error("您没有权限更新该用户的信息");
+            }
+            if(userInfoDTO.getPassword() != null && userInfoDTO.getPassword().length()< 8){
+                return ApiResponse.error("密码长度不能小于8位");
+            }
+            log.info("更新用户信息：{}", userInfoDTO);
+            userService.update(userInfoDTO);
+            blogService.updateTime(userInfoDTO.getUserId());
+            return ApiResponse.success();
+        } catch (Exception e) {
+            log.error("更新用户信息失败: {}", e.getMessage());
+            return ApiResponse.error("更新用户信息失败");
+        }
+
 
     }
     @GetMapping("/password")
     public ApiResponse<String> getPasswordByUserId(Integer userId){
+        if(userId != BaseContext.getCurrentId().intValue()){
+            return ApiResponse.error("您没有权限修改该用户的信息");
+        }
         return ApiResponse.success(userService.getPasswordByUserId(userId));
     }
 
@@ -87,6 +107,9 @@ public class UserController {
     }
     @PostMapping("/register")
     public ApiResponse userRegister(@RequestBody RegisterDTO registerDTO){
+        if(registerDTO.getPassword().length() < 8){
+            return ApiResponse.error("密码长度不能小于8位");
+        }
         userService.register(registerDTO);
         return ApiResponse.success();
     }

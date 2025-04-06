@@ -16,6 +16,7 @@ import com.lxj.myblog.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
 import java.beans.beancontext.BeanContext;
 import java.util.List;
@@ -29,13 +30,14 @@ public class UserServiceImpl implements UserService {
     public User login(UserLoginDTO userLoginDTO) {
         String account = userLoginDTO.getAccount();
         String password = userLoginDTO.getPassword();
+        String md5Password = DigestUtils.md5DigestAsHex(password.getBytes());
         User user = userMapper.getByAccount(account);
         //处理异常情况
         if (user == null) {
             //账号不存在
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
-        if(!user.getPassword().equals(password)){
+        if(!user.getPassword().equals(md5Password)){
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
@@ -44,12 +46,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(UserInfoDTO userInfoDTO) {
+        if(userInfoDTO.getPassword() != null ){
+            String md5Password = DigestUtils.md5DigestAsHex(userInfoDTO.getPassword().getBytes());
+            userInfoDTO.setPassword(md5Password);
+        }
         userMapper.update(userInfoDTO);
     }
 
     @Override
     public String getPasswordByUserId(Integer userId) {
-       return userMapper.getPasswordByUserId(userId);
+       return  userMapper.getPasswordByUserId(userId);
     }
 
     @Override
@@ -73,6 +79,8 @@ public class UserServiceImpl implements UserService {
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_ALREADY_EXIST);
         }
         else {
+            String md5Password = DigestUtils.md5DigestAsHex(registerDTO.getPassword().getBytes());
+            registerDTO.setPassword(md5Password);
             userMapper.register(registerDTO);
             IntroduceDTO introduce = new IntroduceDTO();
             introduce.setUserId(registerDTO.getUserId());

@@ -1,5 +1,6 @@
 package com.lxj.myblog.mapper;
 
+import cn.hutool.core.date.DateTime;
 import com.github.pagehelper.Page;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.Blog;
@@ -56,4 +57,6 @@ public interface BlogMapper {
     Integer getCommentsAmount(Integer id);
     @Select("select * from blog_post where updated_at  >= #{minUpdateTime}")
     List<BlogVO> listQuestionWithDelete(Date fiveMinutesAgoDate);
+    @Update("update blog_post set updated_at = #{now} where user_id=#{userId}")
+    void updateTime(@Param("userId")Integer userId,@Param("now") DateTime now);
 }

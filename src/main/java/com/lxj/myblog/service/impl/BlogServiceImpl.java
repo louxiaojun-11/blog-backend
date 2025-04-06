@@ -1,5 +1,6 @@
 package com.lxj.myblog.service.impl;
 
+import cn.hutool.core.date.DateTime;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -165,6 +166,12 @@ public class BlogServiceImpl implements BlogService {
         long totalHits = searchHits.getTotalHits(); // 或 searchHits.getTotalHits().value（ES 7.0+）
 
         return new PageResult(totalHits, content);
+    }
+
+    @Override
+    public void updateTime(Integer userId) {
+        DateTime now = DateTime.now();
+        blogMapper.updateTime(userId,now);
     }
 }
 

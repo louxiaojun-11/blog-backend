@@ -14,6 +14,10 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Date;
+
+/**
+ * 增量同步博客到ES
+ */
 @Component
 @Slf4j
 public class IncSyncBlogToEs  {
@@ -25,14 +29,14 @@ public class IncSyncBlogToEs  {
     private  BlogEsDao blogEsDao;
 
     /**
-     * 每分钟执行一次
+     * 每20秒执行一次
      */
     @Scheduled(fixedRate = 20 * 1000)
     public void run() {
-        // 查询近 5 分钟内的数据
-        long FIVE_MINUTES = 5 * 60 * 1000L;
-        Date fiveMinutesAgoDate = new Date(new Date().getTime() - FIVE_MINUTES);
-        List<BlogVO> blogVOList = blogMapper.listQuestionWithDelete(fiveMinutesAgoDate);
+        // 查询近 40秒内的数据
+        long updateTime =  40 * 1000L;
+        Date fortySecondsAgoDate = new Date(new Date().getTime() - updateTime);
+        List<BlogVO> blogVOList = blogMapper.listQuestionWithDelete(fortySecondsAgoDate);
         blogVOList.forEach(blogVO -> blogVO.setAuthor(blogMapper.getAuthor(blogVO.getUserId())));
         if (CollUtil.isEmpty(blogVOList)) {
             log.info("no inc blog");

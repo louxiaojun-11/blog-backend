@@ -27,4 +27,6 @@ public interface BlogService {
     List<BlogVO> list();
 
     PageResult searchBlogByPage(SearchBlogDTO searchBlogDTO);
+
+    void updateTime(Integer userId);
 }
