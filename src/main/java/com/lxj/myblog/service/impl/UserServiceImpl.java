@@ -107,4 +107,9 @@ public class UserServiceImpl implements UserService {
         userMapper.uploadMusic(userId, musicURL, musicName);
     }
 
+    @Override
+    public void updateUserStatus(Integer senderId, String status) {
+            userMapper.updateUserStatus(senderId, status);
+    }
+
 }

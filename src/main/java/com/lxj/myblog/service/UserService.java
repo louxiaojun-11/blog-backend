@@ -21,4 +21,6 @@ public interface UserService {
     PageResult musicPageQuery(MusicListDTO musicListDTO);
 
     void uploadMusic(MusicUploadDTO musicUploadDTO);
+
+    void updateUserStatus(Integer senderId, String status);
 }

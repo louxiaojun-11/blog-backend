@@ -54,4 +54,6 @@ public interface UserMapper {
     Page<MusicVO> musicPageQuery(MusicListDTO musicListDTO);
    @Insert("INSERT INTO user_music (user_id, music_url,music_name) VALUES (#{userId}, #{musicURL},#{musicName})")
     void uploadMusic(@Param("userId")Integer userId,@Param("musicURL") String musicURL,@Param("musicName") String musicName);
+   @Update("UPDATE users SET status = #{status} WHERE user_id = #{senderId}")
+    void updateUserStatus(@Param("senderId")Integer senderId,@Param("status") String status);
 }
