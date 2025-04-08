@@ -2,6 +2,7 @@ package com.lxj.myblog.config;
 
 
 import com.lxj.myblog.interceptor.JwtTokenUserInterceptor;
+import com.lxj.myblog.interceptor.JwtTokenAdminInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -23,18 +24,36 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     @Autowired
     private JwtTokenUserInterceptor jwtTokenUserInterceptor;
 
+    @Autowired
+    private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
+
+
     /**
      * 注册自定义拦截器
      *
      * @param registry
      */
     protected void addInterceptors(InterceptorRegistry registry) {
-        log.info("开始注册自定义拦截器...");
+        log.info("开始注册自定义user拦截器...");
 
         registry.addInterceptor(jwtTokenUserInterceptor)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns("/api/user/login")
                 .excludePathPatterns("/api/user/register");
+    }
+    /**
+     * 注册自定义拦截器
+     *
+     * @param registry
+     */
+    protected void addAdminInterceptors(InterceptorRegistry registry) {
+        log.info("开始注册自定义user拦截器...");
+
+        registry.addInterceptor(jwtTokenAdminInterceptor)
+                .addPathPatterns("/manage/**")
+//                .excludePathPatterns("/api/user/register")
+                .excludePathPatterns("/manage/admin/login");
+
     }
 
 
