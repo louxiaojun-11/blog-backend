@@ -97,15 +97,11 @@ public class WebSocketServer {
             String msg = JSON.toJSONString(R.createMsg(false, this.senderId, requestMessage.getMsg()), SerializerFeature.WriteNullStringAsEmpty);
             session.getBasicRemote().sendText(msg);
             // 持久化消息
-            ChatRecord chatRecord = new ChatRecord();
-            chatRecord.setSenderId(this.senderId);
-            chatRecord.setReceiverId(requestMessage.getReceiverId());
-            chatRecord.setMessage(requestMessage.getMsg());
-            chatRecord.setSendTime(LocalDateTime.now());
-            chatMapper.insertChatRecord(chatRecord);
+            saveRecord(this.senderId,requestMessage.getReceiverId(),requestMessage.getMsg());
         } else {
-            String msg = JSON.toJSONString(R.createMsg(true, null, "没有指定的目的联系人"), SerializerFeature.WriteNullStringAsEmpty);
-            this.session.getBasicRemote().sendText(msg);
+//            String msg = JSON.toJSONString(R.createMsg(true, null, "没有指定的目的联系人"), SerializerFeature.WriteNullStringAsEmpty);
+//            this.session.getBasicRemote().sendText(msg);   ChatRecord chatRecord = new ChatRecord();
+            saveRecord(this.senderId,requestMessage.getReceiverId(),requestMessage.getMsg());
         }
     }
 
@@ -120,8 +116,8 @@ public class WebSocketServer {
             userService.updateUserStatus(senderId, "offline");
             subCount();
             //通知其他用户，该用户下线了
-            String msg = JSON.toJSONString(R.createMsg(true, null, onlineUsers.keySet()), SerializerFeature.WriteNullStringAsEmpty);
-            broadcast(msg);
+//            String msg = JSON.toJSONString(R.createMsg(true, null, onlineUsers.keySet()), SerializerFeature.WriteNullStringAsEmpty);
+//            broadcast(msg);
             log.info("当前在线人数为：{}，分别是：{}", getCount(),onlineUsers.keySet());
         }
     }
@@ -148,6 +144,14 @@ public class WebSocketServer {
             //发送消息
             session.getBasicRemote().sendText(message);
         }
+    }
+    public static void saveRecord(Integer senderId,Integer receiverId,String msg){
+        ChatRecord chatRecord = new ChatRecord();
+        chatRecord.setSenderId(senderId);
+        chatRecord.setReceiverId(receiverId);
+        chatRecord.setMessage(msg);
+        chatRecord.setSendTime(LocalDateTime.now());
+        chatMapper.insertChatRecord(chatRecord);
     }
 
     public static synchronized void addCount(){

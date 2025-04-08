@@ -11,6 +11,6 @@ public interface ChatMapper {
     void insertChatRecord(ChatRecord chatRecord);
     @Select("select  * from chat_record " +
             "where (sender_id = #{senderId} and receiver_id = #{receiverId})" +
-            " or (sender_id = #{receiverId} and receiver_id = #{senderId}) order by send_time desc")
+            " or (sender_id = #{receiverId} and receiver_id = #{senderId}) order by send_time asc")
     List<ChatRecord> getChatRecordsBySenderAndReceiver(@Param("senderId")Integer senderId,@Param("receiverId") Integer receiverId);
 }
