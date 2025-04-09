@@ -40,21 +40,13 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
                 .addPathPatterns("/api/**")
                 .excludePathPatterns("/api/user/login")
                 .excludePathPatterns("/api/user/register");
-    }
-    /**
-     * 注册自定义拦截器
-     *
-     * @param registry
-     */
-    protected void addAdminInterceptors(InterceptorRegistry registry) {
-        log.info("开始注册自定义user拦截器...");
 
+        log.info("开始注册自定义admin拦截器...");
         registry.addInterceptor(jwtTokenAdminInterceptor)
                 .addPathPatterns("/manage/**")
-//                .excludePathPatterns("/api/user/register")
                 .excludePathPatterns("/manage/admin/login");
-
     }
+
 
 
     /**

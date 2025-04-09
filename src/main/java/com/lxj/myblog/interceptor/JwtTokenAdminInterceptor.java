@@ -47,6 +47,10 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             log.info("jwt校验:{}", token);
             Claims claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);
             Long adminId = Long.valueOf(claims.get(JwtClaimsConstant.ADMIN_ID).toString());
+            String status = claims.get(JwtClaimsConstant.STATUS).toString();
+            if(status.equals("deactivate")){
+                throw new RuntimeException("账号已被禁用");
+            }
             log.info("当前用户id：", adminId);
             BaseContext.setCurrentId(adminId);
             //3、通过，放行

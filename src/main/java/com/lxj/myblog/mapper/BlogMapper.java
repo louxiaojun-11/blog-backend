@@ -4,10 +4,12 @@ import cn.hutool.core.date.DateTime;
 import com.github.pagehelper.Page;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.Blog;
+import com.lxj.myblog.domain.entity.BlogViolationRecord;
 import com.lxj.myblog.domain.entity.Comment;
 import com.lxj.myblog.domain.vo.AuthorVO;
 import com.lxj.myblog.domain.vo.BlogVO;
 import com.lxj.myblog.domain.vo.MusicVO;
+import com.lxj.myblog.domain.vo.UserBlogVO;
 import com.lxj.myblog.result.PageResult;
 import org.apache.ibatis.annotations.*;
 
@@ -59,4 +61,15 @@ public interface BlogMapper {
     List<BlogVO> listQuestionWithDelete(Date fiveMinutesAgoDate);
     @Update("update blog_post set updated_at = #{now} where user_id=#{userId}")
     void updateTime(@Param("userId")Integer userId,@Param("now") DateTime now);
+    @Select("select id,title, content, user_id,likes, comments, created_at, updated_at from blog_post where id = #{blogId}")
+    UserBlogVO getDetail(Integer blogId);
+    @Select("select title from blog_post where id = #{blogId}")
+    String getBlogTitle(Integer blogId);
+    @Select("select content from blog_post where id = #{blogId}")
+    String getBlogContent(Integer blogId);
+    @Insert("insert into blog_violation (blog_id, user_id,title,content,reason,admin_id)" +
+            " values(#{blogId}, #{userId},#{title}, #{content}, #{reason}, #{adminId})")
+    void insertViolationRecord(BlogViolationRecord violationRecord);
+    @Select("select user_id from blog_post where id = #{blogId}")
+    Integer getBlogUserId(Integer blogId);
 }

@@ -12,6 +12,7 @@ import com.lxj.myblog.domain.entity.Comment;
 import com.lxj.myblog.domain.vo.AuthorVO;
 import com.lxj.myblog.domain.vo.BlogVO;
 import com.lxj.myblog.domain.vo.MusicVO;
+import com.lxj.myblog.domain.vo.UserBlogVO;
 import com.lxj.myblog.mapper.BlogMapper;
 import com.lxj.myblog.result.PageResult;
 import com.lxj.myblog.service.BlogService;
@@ -172,6 +173,11 @@ public class BlogServiceImpl implements BlogService {
     public void updateTime(Integer userId) {
         DateTime now = DateTime.now();
         blogMapper.updateTime(userId,now);
+    }
+
+    @Override
+    public UserBlogVO getDetail(Integer blogId) {
+        return blogMapper.getDetail(blogId);
     }
 }
 

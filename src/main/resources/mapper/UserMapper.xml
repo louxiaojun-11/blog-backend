@@ -15,4 +15,18 @@
         </set>
          where user_id = #{userId};
     </update>
+    <select id="getUserList" resultType="com.lxj.myblog.domain.vo.UserListVO" >
+        select  * from users
+        <where>
+            <if test="key != null">
+                and (username like concat('%',#{key},'%') or account like concat('%',#{key},'%'))
+            </if>
+        </where>
+        <if test="timeOrder == true">
+            order by created_at desc
+        </if>
+        <if test="timeOrder == false">
+            order by created_at asc
+        </if>
+    </select>
 </mapper>
