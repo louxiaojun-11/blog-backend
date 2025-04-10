@@ -69,4 +69,6 @@ public interface UserMapper {
     void updateUserAvatar(@Param("userId")Integer userId, @Param("defaultAvatar")String defaultAvatar);
     @Update("UPDATE users SET username = #{result} WHERE user_id = #{userId}")
     void updateUsername(@Param("userId") Integer userId, @Param("result") String result);
+   @Select("SELECT username FROM users WHERE user_id = #{userId}")
+    String getUsernameById(Integer userId);
 }

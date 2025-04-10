@@ -14,6 +14,7 @@ import com.lxj.myblog.domain.vo.BlogVO;
 import com.lxj.myblog.domain.vo.MusicVO;
 import com.lxj.myblog.domain.vo.UserBlogVO;
 import com.lxj.myblog.mapper.BlogMapper;
+import com.lxj.myblog.mapper.UserMapper;
 import com.lxj.myblog.result.PageResult;
 import com.lxj.myblog.service.BlogService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +29,13 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.data.elasticsearch.core.SearchHit;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.data.domain.PageImpl;
 
 @Service
@@ -44,6 +48,8 @@ public class BlogServiceImpl implements BlogService {
     BlogEsRepository blogEsRepository;
     @Autowired
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
+    @Autowired
+    private UserMapper userMapper;
 //    @Override
 //    public List<BlogVO> getBlogListByUserId(Integer userId) {
 //        AuthorVO author = new AuthorVO();
@@ -84,6 +90,7 @@ public class BlogServiceImpl implements BlogService {
         blogMapper.deleteById(id);
         //通过id删除es中的数据，因为es中没有分页，所以直接通过id删除即可。
         blogEsRepository.deleteById(String.valueOf(id));
+
     }
 
     @Override
@@ -99,6 +106,15 @@ public class BlogServiceImpl implements BlogService {
     public void addLike(LikeBlogDTO likeBlogDTO) {
         blogMapper.addLikeAmount(likeBlogDTO);
         blogMapper.addLike(likeBlogDTO);
+        Integer blogId = likeBlogDTO.getBlogId();
+        Integer operationUserId = likeBlogDTO.getUserId();
+        String blogName = blogMapper.getBlogTitle(blogId);
+        String username = userMapper.getUsernameById(operationUserId);
+        Integer userId = blogMapper.getBlogUserId(blogId);
+        String notice = username + " 点赞了你的博文:<" + blogName + ">";
+        if(operationUserId != userId) {
+            blogMapper.sendNotice(userId, notice, "blogLike", null, operationUserId);
+        }
     }
 
     @Override
@@ -120,6 +136,17 @@ public class BlogServiceImpl implements BlogService {
     public void addComment(CommentDTO commentDTO) {
         blogMapper.addCommentAmount(commentDTO);
         blogMapper.addComment(commentDTO);
+        Integer blogId = commentDTO.getBlogId();
+        String content = commentDTO.getContent();
+        String blogName = blogMapper.getBlogTitle(blogId);
+        Integer operationUserId = commentDTO.getUserId();
+        String username = userMapper.getUsernameById(operationUserId);
+        Integer userId = blogMapper.getBlogUserId(blogId);
+        String notice = username + "给你的博文:<" + blogName + "> 评论了:" + content;
+        if (operationUserId != userId) {
+            blogMapper.sendNotice(userId, notice, "blogComment", null, operationUserId);
+        }
+
     }
 
     @Override
@@ -159,8 +186,8 @@ public class BlogServiceImpl implements BlogService {
                 .map(SearchHit::getContent)
                 .collect(Collectors.toList());
         content.forEach(blogVO -> {
-           blogVO.setLikes(blogMapper.getLikesAmount(blogVO.getId()));
-           blogVO.setComments(blogMapper.getCommentsAmount(blogVO.getId()));
+            blogVO.setLikes(blogMapper.getLikesAmount(blogVO.getId()));
+            blogVO.setComments(blogMapper.getCommentsAmount(blogVO.getId()));
         });
 
         // 6. 获取总记录数
@@ -172,7 +199,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void updateTime(Integer userId) {
         DateTime now = DateTime.now();
-        blogMapper.updateTime(userId,now);
+        blogMapper.updateTime(userId, now);
     }
 
     @Override

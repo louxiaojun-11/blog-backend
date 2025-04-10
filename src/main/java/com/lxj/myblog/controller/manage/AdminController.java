@@ -11,13 +11,18 @@ import com.lxj.myblog.domain.vo.AdminLoginVO;
 import com.lxj.myblog.domain.vo.UserLoginVO;
 import com.lxj.myblog.service.AdminService;
 import com.lxj.myblog.utils.JwtUtil;
+import com.lxj.myblog.ws.WebSocketServer;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.Session;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.lxj.myblog.ws.WebSocketServer.getWebSocketServer;
 
 @RestController
 @RequestMapping("/manage/admin")
@@ -52,5 +57,11 @@ public class AdminController {
         log.info("登录成功:{},状态:{}",adminLoginVO,status);
         return ApiResponse.success(adminLoginVO);
     }
-
+    @PostMapping("/notice")
+    public ApiResponse sendNotice(Integer userId) throws IOException {
+        WebSocketServer webSocketServer =  getWebSocketServer(userId);
+        Session session = webSocketServer.getSession();
+        session.getBasicRemote().sendText("你好");
+        return ApiResponse.success();
+    }
 }

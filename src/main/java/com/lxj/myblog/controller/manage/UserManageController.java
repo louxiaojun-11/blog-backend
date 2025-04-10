@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/manage/user")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -49,8 +51,13 @@ public class UserManageController{
         return ApiResponse.success();
     }
     @PostMapping("/userBlogViolation")
-    public ApiResponse handleBlogViolation(@RequestBody UserBlogViolationDTO userBlogViolationDTO){
-        userManageService.handleBlogViolation(userBlogViolationDTO);
-        return ApiResponse.success();
+    public ApiResponse handleBlogViolation(@RequestBody UserBlogViolationDTO userBlogViolationDTO) throws IOException {
+        try{
+            userManageService.handleBlogViolation(userBlogViolationDTO);
+            return ApiResponse.success();
+        }catch (Exception e){
+            return ApiResponse.error("处理失败");
+        }
+
     }
 }

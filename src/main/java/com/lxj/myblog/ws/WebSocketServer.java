@@ -1,17 +1,14 @@
 package com.lxj.myblog.ws;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.lxj.myblog.domain.entity.ChatRecord;
 import com.lxj.myblog.domain.entity.R;
 import com.lxj.myblog.domain.entity.RequestMessage;
 import com.lxj.myblog.mapper.ChatMapper;
-import com.lxj.myblog.mapper.UserMapper;
 import com.lxj.myblog.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.PostConstruct;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
@@ -19,6 +16,7 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -75,6 +73,7 @@ public class WebSocketServer {
         broadcast(msg);
         log.info("当前在线人数为：{}，分别是：{}", getCount(),onlineUsers.keySet());
     }
+
 
     /**
      * 接收到客户端发送的数据时被调用
@@ -165,4 +164,11 @@ public class WebSocketServer {
     public static synchronized long getCount(){
         return WebSocketServer.COUNT;
     }
+    public static WebSocketServer getWebSocketServer(Integer userId) {
+        return onlineUsers.get(userId);
+    }
+    public Session getSession() {
+        return this.session;
+    }
+
 }

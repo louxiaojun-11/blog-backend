@@ -72,4 +72,9 @@ public interface BlogMapper {
     void insertViolationRecord(BlogViolationRecord violationRecord);
     @Select("select user_id from blog_post where id = #{blogId}")
     Integer getBlogUserId(Integer blogId);
+    @Insert("insert into notice (user_id,content,type,admin_id,operation_user_id) values(#{userId}, #{content}, #{type}, #{adminId},#{operationUserId})")
+    void sendNotice(@Param("userId")Integer userId, @Param("content")String content,
+                    @Param("type")String type, @Param("adminId")Integer adminId,
+                    @Param("operationUserId") Integer operationUserId);
+
 }
