@@ -6,6 +6,7 @@ import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.Comment;
 import com.lxj.myblog.domain.vo.*;
 import com.lxj.myblog.mapper.HobbyMapper;
+import com.lxj.myblog.mapper.UserMapper;
 import com.lxj.myblog.result.PageResult;
 import com.lxj.myblog.service.HobbyService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,8 @@ import java.util.List;
 public class HobbyServiceImpl implements HobbyService {
     @Autowired
     private HobbyMapper hobbyMapper;
+    @Autowired
+    private UserMapper userMapper;
     @Override
     public PageResult groupPageQuery(HobbyGroupPageDTO hobbyGroupPageDTO) {
         PageHelper.startPage(hobbyGroupPageDTO.getPage(), hobbyGroupPageDTO.getPageSize());
@@ -83,7 +86,9 @@ public class HobbyServiceImpl implements HobbyService {
 
     @Override
     public GroupBlogUserVO getGroupBlogUser(Integer userId) {
-        return hobbyMapper.getGroupBlogUser(userId);
+        GroupBlogUserVO user = hobbyMapper.getGroupBlogUser(userId);
+        user.setIntroduce(userMapper.getIntroduce(userId));
+        return user;
     }
 
     @Override

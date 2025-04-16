@@ -3,6 +3,7 @@ package com.lxj.myblog.mapper;
 import com.github.pagehelper.Page;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.User;
+import com.lxj.myblog.domain.vo.InformationVO;
 import com.lxj.myblog.domain.vo.MusicVO;
 import com.lxj.myblog.domain.vo.UserListVO;
 import org.apache.ibatis.annotations.*;
@@ -71,4 +72,7 @@ public interface UserMapper {
     void updateUsername(@Param("userId") Integer userId, @Param("result") String result);
    @Select("SELECT username FROM users WHERE user_id = #{userId}")
     String getUsernameById(Integer userId);
+    Page<InformationVO> pageQueryInformation(InformationPageDTO informationPageDTO);
+   @Select("SELECT * FROM information WHERE information_id = #{informationId} ")
+    InformationVO getInformationDetail(String informationId);
 }

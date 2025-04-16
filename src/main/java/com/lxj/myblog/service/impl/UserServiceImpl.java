@@ -6,6 +6,7 @@ import com.lxj.myblog.constant.MessageConstant;
 import com.lxj.myblog.context.BaseContext;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.User;
+import com.lxj.myblog.domain.vo.InformationVO;
 import com.lxj.myblog.domain.vo.MusicVO;
 import com.lxj.myblog.domain.vo.UserProfileVO;
 import com.lxj.myblog.exception.AccountNotFoundException;
@@ -110,6 +111,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserStatus(Integer senderId, String status) {
             userMapper.updateUserStatus(senderId, status);
+    }
+
+    @Override
+    public PageResult pageQueryInformation(InformationPageDTO informationPageDTO) {
+        PageHelper.startPage(informationPageDTO.getPage(), informationPageDTO.getPageSize());
+        Page<InformationVO> page = userMapper.pageQueryInformation(informationPageDTO);
+        long total = page.getTotal();
+        List<InformationVO> records = page.getResult();
+        return new PageResult(total, records);
+    }
+
+    @Override
+    public InformationVO getInformationDetail(String informationId) {
+        return userMapper.getInformationDetail(informationId);
     }
 
 }

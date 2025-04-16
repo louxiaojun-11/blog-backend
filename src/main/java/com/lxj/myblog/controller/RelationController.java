@@ -59,7 +59,6 @@ public class RelationController {
         List<RelationVO> searchList = relationService.getSearchList(searchContent);
         log.info(searchList.toString());
         return ApiResponse.success(searchList);
-
     }
 
     @PutMapping("/follow")

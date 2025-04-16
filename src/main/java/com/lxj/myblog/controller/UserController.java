@@ -123,4 +123,10 @@ public class UserController {
         userService.uploadMusic(musicUploadDTO);
         return ApiResponse.success();
     }
+
+    @GetMapping("/informationList")
+    public ApiResponse<PageResult> getInformation(InformationPageDTO informationPageDTO){
+        PageResult pageResult =userService.pageQueryInformation(informationPageDTO);
+        return ApiResponse.success(pageResult);
+    }
 }

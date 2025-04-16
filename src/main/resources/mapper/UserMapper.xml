@@ -29,4 +29,13 @@
             order by created_at asc
         </if>
     </select>
+    <select id="pageQueryInformation" resultType="com.lxj.myblog.domain.vo.InformationVO">
+        select information_id,title, content, pic,type,created_at,views from information
+        <where>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+        </where>
+            order by created_at desc
+    </select>
 </mapper>

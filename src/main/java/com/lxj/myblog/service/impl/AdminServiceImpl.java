@@ -2,11 +2,13 @@ package com.lxj.myblog.service.impl;
 
 import com.lxj.myblog.constant.MessageConstant;
 import com.lxj.myblog.domain.dto.AdminLoginDTO;
+import com.lxj.myblog.domain.dto.InformationDTO;
 import com.lxj.myblog.domain.entity.Admin;
 import com.lxj.myblog.domain.entity.User;
 import com.lxj.myblog.exception.AccountNotFoundException;
 import com.lxj.myblog.exception.PasswordErrorException;
 import com.lxj.myblog.mapper.AdminMapper;
+import com.lxj.myblog.mapper.InformationMapper;
 import com.lxj.myblog.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import org.springframework.util.DigestUtils;
 public class AdminServiceImpl implements AdminService {
     @Autowired
     private AdminMapper adminMapper;
+    @Autowired
+    private InformationMapper informationMapper;
     @Override
     public Admin login(AdminLoginDTO adminLoginDTO) {
         String account = adminLoginDTO.getAccount();
@@ -33,5 +37,15 @@ public class AdminServiceImpl implements AdminService {
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
         return admin;
+    }
+
+    @Override
+    public void releaseInformation(InformationDTO informationDTO) {
+        informationMapper.releaseInformation(informationDTO);
+    }
+
+    @Override
+    public void deleteInformation(String informationId) {
+        informationMapper.deleteInformation(informationId);
     }
 }

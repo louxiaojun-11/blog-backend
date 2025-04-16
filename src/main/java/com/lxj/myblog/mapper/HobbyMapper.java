@@ -32,7 +32,7 @@ public interface HobbyMapper {
     void reduceGroupMember(JoinGroupDTO joinGroupDTO);
     @Select("select * from hobby_blog where blog_id = #{blogId}")
     GroupBlogDetailVO getGroupBlogDetail(Integer blogId);
-    @Select("select username,avatar,introduce from users join user_introduce on users.user_id = user_introduce.user_id where users.user_id = #{userId}")
+    @Select("select username,avatar from users where users.user_id = #{userId}")
     GroupBlogUserVO getGroupBlogUser(Integer userId);
     @Select("select count(*) from hobby_like where user_id = #{userId} and blog_id=#{blogId}")
     int findLike(LikeBlogDTO likeBlogDTO);
