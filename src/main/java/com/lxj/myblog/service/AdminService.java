@@ -3,6 +3,7 @@ package com.lxj.myblog.service;
 import com.lxj.myblog.domain.dto.AdminLoginDTO;
 import com.lxj.myblog.domain.dto.InformationDTO;
 import com.lxj.myblog.domain.entity.Admin;
+import com.lxj.myblog.domain.entity.SensitiveWord;
 
 public interface AdminService {
     Admin login(AdminLoginDTO adminLoginDTO);
@@ -10,4 +11,6 @@ public interface AdminService {
     void releaseInformation(InformationDTO informationDTO);
 
     void deleteInformation(String informationId);
+
+
 }

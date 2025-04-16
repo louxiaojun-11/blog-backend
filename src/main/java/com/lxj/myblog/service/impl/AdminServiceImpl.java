@@ -4,6 +4,7 @@ import com.lxj.myblog.constant.MessageConstant;
 import com.lxj.myblog.domain.dto.AdminLoginDTO;
 import com.lxj.myblog.domain.dto.InformationDTO;
 import com.lxj.myblog.domain.entity.Admin;
+import com.lxj.myblog.domain.entity.SensitiveWord;
 import com.lxj.myblog.domain.entity.User;
 import com.lxj.myblog.exception.AccountNotFoundException;
 import com.lxj.myblog.exception.PasswordErrorException;
@@ -48,4 +49,6 @@ public class AdminServiceImpl implements AdminService {
     public void deleteInformation(String informationId) {
         informationMapper.deleteInformation(informationId);
     }
+
+
 }

@@ -3,14 +3,19 @@ package com.lxj.myblog.controller;
 
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.response.ApiResponse;
+import com.lxj.myblog.domain.response.SensitiveCheckResult;
 import com.lxj.myblog.domain.vo.BlogVO;
 import com.lxj.myblog.result.PageResult;
 import com.lxj.myblog.service.BlogService;
+import com.lxj.myblog.service.SensitiveWordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/blog")
@@ -19,9 +24,21 @@ import java.util.List;
 public class BlogController {
     @Autowired
     private BlogService blogService;
-
+    @Autowired
+    private SensitiveWordService sensitiveWordService;
     @PostMapping
     public ApiResponse uploadBlog(@RequestBody BlogDTO blogDTO) {
+        //检测敏感词
+        SensitiveCheckResult contentResult = sensitiveWordService.checkText(blogDTO.getContent());
+        SensitiveCheckResult titleResult = sensitiveWordService.checkText(blogDTO.getTitle());
+         if(contentResult.isContainsSensitiveWord() || titleResult.isContainsSensitiveWord())
+        {
+            Set<String> wordsSet = new HashSet<>();
+            contentResult.getSensitiveWords().forEach(wordsSet::add);
+            titleResult.getSensitiveWords().forEach(wordsSet::add);
+            String msg = String.join(",", wordsSet) ;
+            return ApiResponse.error("博文包含敏感词: " + msg);
+        }
         blogService.upload(blogDTO);
         return ApiResponse.success();
 

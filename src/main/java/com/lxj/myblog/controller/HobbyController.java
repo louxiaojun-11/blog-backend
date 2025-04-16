@@ -1,14 +1,19 @@
 package com.lxj.myblog.controller;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.response.ApiResponse;
+import com.lxj.myblog.domain.response.SensitiveCheckResult;
 import com.lxj.myblog.domain.vo.GroupBlogDetailVO;
 import com.lxj.myblog.domain.vo.GroupBlogUserVO;
 import com.lxj.myblog.domain.vo.GroupInfoVO;
 import com.lxj.myblog.result.PageResult;
 import com.lxj.myblog.service.HobbyService;
+import com.lxj.myblog.service.SensitiveWordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/hobby")
@@ -17,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 public class HobbyController {
     @Autowired
     private HobbyService hobbyService;
+    @Autowired
+    private SensitiveWordService sensitiveWordService;
     @GetMapping("/groupList")
     public ApiResponse<PageResult> getGroupList(HobbyGroupPageDTO hobbyGroupPageDTO) {
         PageResult pageResult = hobbyService.groupPageQuery(hobbyGroupPageDTO);
@@ -24,6 +31,16 @@ public class HobbyController {
     }
     @PostMapping("/postHobbyBlog")
     public ApiResponse postHobbyBlog(@RequestBody HobbyBlogDTO hobbyBlogDTO) {
+        SensitiveCheckResult contentResult = sensitiveWordService.checkText(hobbyBlogDTO.getContent());
+        SensitiveCheckResult titleResult = sensitiveWordService.checkText(hobbyBlogDTO.getTitle());
+        if(contentResult.isContainsSensitiveWord() || titleResult.isContainsSensitiveWord())
+        {
+            Set<String> wordsSet = new HashSet<>();
+            contentResult.getSensitiveWords().forEach(wordsSet::add);
+            titleResult.getSensitiveWords().forEach(wordsSet::add);
+            String msg = String.join(",", wordsSet) ;
+            return ApiResponse.error("博文包含敏感词: " + msg);
+        }
         hobbyService.uploadHobbyBlog(hobbyBlogDTO);
         return ApiResponse.success();
     }

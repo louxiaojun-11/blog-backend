@@ -3,11 +3,9 @@ package com.lxj.myblog.controller.manage;
 import com.lxj.myblog.Properties.JwtProperties;
 import com.lxj.myblog.constant.JwtClaimsConstant;
 import com.lxj.myblog.constant.MessageConstant;
-import com.lxj.myblog.domain.dto.AdminLoginDTO;
-import com.lxj.myblog.domain.dto.InformationDTO;
-import com.lxj.myblog.domain.dto.InformationPageDTO;
-import com.lxj.myblog.domain.dto.UserLoginDTO;
+import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.Admin;
+import com.lxj.myblog.domain.entity.SensitiveWord;
 import com.lxj.myblog.domain.entity.User;
 import com.lxj.myblog.domain.response.ApiResponse;
 import com.lxj.myblog.domain.vo.AdminLoginVO;
@@ -15,6 +13,7 @@ import com.lxj.myblog.domain.vo.InformationVO;
 import com.lxj.myblog.domain.vo.UserLoginVO;
 import com.lxj.myblog.result.PageResult;
 import com.lxj.myblog.service.AdminService;
+import com.lxj.myblog.service.SensitiveWordService;
 import com.lxj.myblog.service.UserService;
 import com.lxj.myblog.utils.AliOssUtil;
 import com.lxj.myblog.utils.JwtUtil;
@@ -28,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.websocket.Session;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -46,6 +46,8 @@ public class AdminController {
     private UserService userService;
     @Autowired
     private AliOssUtil aliOssUtil;
+    @Autowired
+    private SensitiveWordService sensitiveWordService;
     @PostMapping("/login")
     public ApiResponse<AdminLoginVO> login(@RequestBody AdminLoginDTO adminLoginDTO){
         Admin admin = adminService.login(adminLoginDTO);
@@ -111,5 +113,25 @@ public class AdminController {
             log.error("上传文件失败", e);
         }
         return ApiResponse.error(MessageConstant.UPLOAD_FAILED);
+    }
+    @GetMapping("/listWords")
+    public ApiResponse<PageResult>listSensitiveWords(SensitiveWordDTO sensitiveWordDTO){
+        PageResult pageResult =sensitiveWordService.pageQuerySensitiveWords(sensitiveWordDTO);
+        return ApiResponse.success(pageResult);
+    }
+    @PostMapping("/addWord")
+    public ApiResponse addSensitiveWord(@RequestBody WordDTO wordDTO){
+        String word = wordDTO.getWord();
+        try {
+            sensitiveWordService.addWord(word);
+        }catch (Exception e){
+            return ApiResponse.error("数据库中已有该敏感词");
+        }
+        return ApiResponse.success();
+    }
+    @DeleteMapping("/deleteWord/{id}")
+    public ApiResponse addSensitiveWord(@PathVariable Integer id){
+        sensitiveWordService.deleteWord(id);
+        return ApiResponse.success();
     }
 }
