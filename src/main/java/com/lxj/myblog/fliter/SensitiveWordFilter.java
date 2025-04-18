@@ -19,7 +19,7 @@ public class SensitiveWordFilter {
         for (int i = 0; i < word.length(); i++) {
             char c = word.charAt(i);
             Node node = current.getChild(c);
-            
+            //如果当前字符节点不存在，则创建新节点并添加到子节点列表中
             if (node == null) {
                 node = new Node();
                 current.addChild(c, node);
@@ -77,8 +77,9 @@ public class SensitiveWordFilter {
                 if (temp.isEnd()) {
                     sensitiveWords.add(word.toString());
                     // 找到后可以继续查找更长的敏感词（如果需要最大匹配）
-                    // i = j; // 跳过已检测到的敏感词部分
-                    // break;
+                    // 跳过已检测到的敏感词部分
+                     i = j;
+                     break;
                 }
             }
         }
