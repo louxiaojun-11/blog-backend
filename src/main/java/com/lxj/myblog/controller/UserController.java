@@ -6,6 +6,7 @@ import com.lxj.myblog.context.BaseContext;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.User;
 import com.lxj.myblog.domain.response.ApiResponse;
+import com.lxj.myblog.domain.vo.InformationVO;
 import com.lxj.myblog.domain.vo.UserLoginVO;
 import com.lxj.myblog.domain.vo.UserProfileVO;
 import com.lxj.myblog.result.PageResult;
@@ -126,5 +127,10 @@ public class UserController {
     public ApiResponse<PageResult> getInformation(InformationPageDTO informationPageDTO){
         PageResult pageResult =userService.pageQueryInformation(informationPageDTO);
         return ApiResponse.success(pageResult);
+    }
+
+    @GetMapping("/informationDetail/{informationId}")
+    public ApiResponse<InformationVO> getInformationDetail(@PathVariable Integer informationId){
+        return ApiResponse.success(userService.getInformationDetail(informationId));
     }
 }

@@ -121,8 +121,9 @@ public class UserServiceImpl implements UserService {
         return new PageResult(total, records);
     }
 
+
     @Override
-    public InformationVO getInformationDetail(String informationId) {
+    public InformationVO getInformationDetail(Integer informationId) {
         return userMapper.getInformationDetail(informationId);
     }
 

@@ -94,7 +94,7 @@ public class AdminController {
         return ApiResponse.success(pageResult);
     }
     @GetMapping("/informationDetail")
-    public ApiResponse<InformationVO> getInformationDetail(String informationId){
+    public ApiResponse<InformationVO> getInformationDetail(Integer informationId){
         return ApiResponse.success(userService.getInformationDetail(informationId));
     }
     @PostMapping("/upload")

@@ -74,6 +74,6 @@ public interface UserMapper {
     String getUsernameById(Integer userId);
     Page<InformationVO> pageQueryInformation(InformationPageDTO informationPageDTO);
    @Select("SELECT * FROM information WHERE information_id = #{informationId} ")
-    InformationVO getInformationDetail(String informationId);
+    InformationVO getInformationDetail(Integer informationId);
 
 }

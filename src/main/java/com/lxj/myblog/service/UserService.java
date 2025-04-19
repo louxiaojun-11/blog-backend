@@ -27,7 +27,7 @@ public interface UserService {
 
     PageResult pageQueryInformation(InformationPageDTO informationPageDTO);
 
-    InformationVO getInformationDetail(String informationId);
+    InformationVO getInformationDetail(Integer informationId);
 
 
 
