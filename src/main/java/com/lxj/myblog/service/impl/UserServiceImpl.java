@@ -7,6 +7,7 @@ import com.lxj.myblog.context.BaseContext;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.User;
 import com.lxj.myblog.domain.vo.InformationVO;
+import com.lxj.myblog.domain.vo.MultiMediaVO;
 import com.lxj.myblog.domain.vo.MusicVO;
 import com.lxj.myblog.domain.vo.UserProfileVO;
 import com.lxj.myblog.exception.AccountNotFoundException;
@@ -14,12 +15,10 @@ import com.lxj.myblog.exception.PasswordErrorException;
 import com.lxj.myblog.mapper.UserMapper;
 import com.lxj.myblog.result.PageResult;
 import com.lxj.myblog.service.UserService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import java.beans.beancontext.BeanContext;
 import java.util.List;
 
 
@@ -91,10 +90,10 @@ public class UserServiceImpl implements UserService {
 
     }
     @Override
-    public PageResult musicPageQuery(MusicListDTO musicListDTO) {
-        musicListDTO.setUserId(BaseContext.getCurrentId().intValue());
-        PageHelper.startPage(musicListDTO.getPage(), musicListDTO.getPageSize());
-        Page<MusicVO> page = userMapper.musicPageQuery(musicListDTO);
+    public PageResult musicPageQuery(MediaListDTO mediaListDTO) {
+        mediaListDTO.setUserId(BaseContext.getCurrentId().intValue());
+        PageHelper.startPage(mediaListDTO.getPage(), mediaListDTO.getPageSize());
+        Page<MusicVO> page = userMapper.musicPageQuery(mediaListDTO);
         long total = page.getTotal();
         List<MusicVO> records = page.getResult();
         return new PageResult(total, records);
@@ -126,5 +125,8 @@ public class UserServiceImpl implements UserService {
     public InformationVO getInformationDetail(String informationId) {
         return userMapper.getInformationDetail(informationId);
     }
+
+
+
 
 }

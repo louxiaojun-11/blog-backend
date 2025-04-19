@@ -4,12 +4,12 @@ import com.github.pagehelper.Page;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.User;
 import com.lxj.myblog.domain.vo.InformationVO;
+import com.lxj.myblog.domain.vo.MultiMediaVO;
 import com.lxj.myblog.domain.vo.MusicVO;
 import com.lxj.myblog.domain.vo.UserListVO;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -56,7 +56,7 @@ public interface UserMapper {
     void register(RegisterDTO registerDTO);
 
     @Select("select * from user_music where user_id = #{userId} order by created_at desc")
-    Page<MusicVO> musicPageQuery(MusicListDTO musicListDTO);
+    Page<MusicVO> musicPageQuery(MediaListDTO mediaListDTO);
 
     @Insert("INSERT INTO user_music (user_id, music_url,music_name) VALUES (#{userId}, #{musicURL},#{musicName})")
     void uploadMusic(@Param("userId") Integer userId, @Param("musicURL") String musicURL, @Param("musicName") String musicName);
@@ -75,4 +75,5 @@ public interface UserMapper {
     Page<InformationVO> pageQueryInformation(InformationPageDTO informationPageDTO);
    @Select("SELECT * FROM information WHERE information_id = #{informationId} ")
     InformationVO getInformationDetail(String informationId);
+
 }

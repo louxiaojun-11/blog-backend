@@ -19,7 +19,7 @@ public interface UserService {
     void updateIntroduce(IntroduceDTO introduceDTO);
 
     void register(RegisterDTO registerDTO);
-    PageResult musicPageQuery(MusicListDTO musicListDTO);
+    PageResult musicPageQuery(MediaListDTO mediaListDTO);
 
     void uploadMusic(MusicUploadDTO musicUploadDTO);
 
@@ -28,4 +28,7 @@ public interface UserService {
     PageResult pageQueryInformation(InformationPageDTO informationPageDTO);
 
     InformationVO getInformationDetail(String informationId);
+
+
+
 }

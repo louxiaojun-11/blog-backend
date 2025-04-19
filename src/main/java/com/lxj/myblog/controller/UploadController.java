@@ -1,6 +1,7 @@
 package com.lxj.myblog.controller;
 
 import com.lxj.myblog.constant.MessageConstant;
+import com.lxj.myblog.domain.dto.MultiMediaUploadDTO;
 import com.lxj.myblog.domain.dto.MusicUploadDTO;
 import com.lxj.myblog.domain.response.ApiResponse;
 import com.lxj.myblog.mapper.UserMapper;
@@ -68,7 +69,7 @@ public class UploadController {
             music.setMusicName(musicName);
             music.setMusicURL(filepath);
             userService.uploadMusic(music);
-            return ApiResponse.success();
+            return ApiResponse.success(music);
         } catch (IOException e) {
             log.error("上传文件失败", e);
         }

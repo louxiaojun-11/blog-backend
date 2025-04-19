@@ -6,10 +6,8 @@ import com.lxj.myblog.context.BaseContext;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.User;
 import com.lxj.myblog.domain.response.ApiResponse;
-import com.lxj.myblog.domain.vo.BlogVO;
 import com.lxj.myblog.domain.vo.UserLoginVO;
 import com.lxj.myblog.domain.vo.UserProfileVO;
-import com.lxj.myblog.mapper.UserMapper;
 import com.lxj.myblog.result.PageResult;
 import com.lxj.myblog.service.BlogService;
 import com.lxj.myblog.service.UserService;
@@ -20,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -114,10 +111,11 @@ public class UserController {
         return ApiResponse.success();
     }
     @GetMapping("/musicList")
-    public ApiResponse<PageResult> getBlog( MusicListDTO musicListDTO){
-        PageResult pageResult = userService.musicPageQuery(musicListDTO);
+    public ApiResponse<PageResult> getMusicList( MediaListDTO mediaListDTO){
+        PageResult pageResult = userService.musicPageQuery(mediaListDTO);
         return ApiResponse.success(pageResult);
     }
+
     @PostMapping("/musicUpload")
     public ApiResponse uploadMusic(@RequestBody MusicUploadDTO musicUploadDTO){
         userService.uploadMusic(musicUploadDTO);
