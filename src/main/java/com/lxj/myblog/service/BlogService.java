@@ -2,6 +2,7 @@ package com.lxj.myblog.service;
 
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.vo.BlogVO;
+import com.lxj.myblog.domain.vo.RecommendedUserVO;
 import com.lxj.myblog.domain.vo.UserBlogVO;
 import com.lxj.myblog.result.PageResult;
 import org.springframework.data.domain.Page;
@@ -33,4 +34,10 @@ public interface BlogService {
 
 
     UserBlogVO getDetail(Integer blogId);
+
+    PageResult getFollowingBlog(BlogPageQueryDTO blogPageQueryDTO);
+
+    List<BlogVO> getRecommendedBlogList(List<Integer> followingIdList);
+
+    List<RecommendedUserVO> getRecommendedUser(List<Integer> followingIdList);
 }

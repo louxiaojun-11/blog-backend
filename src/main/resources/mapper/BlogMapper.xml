@@ -10,4 +10,23 @@
     <select id="getAuthor" resultType="com.lxj.myblog.domain.vo.AuthorVO" parameterType="java.lang.Integer">
         select user_id,username,avatar from users where user_id = #{userId};
     </select>
+    <!-- Mapper XML -->
+    <select id="getRecommendedBlogList" resultType="com.lxj.myblog.domain.vo.BlogVO">
+        SELECT * FROM blog_post
+        WHERE user_id NOT IN
+        <foreach collection="excludedUserIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+        ORDER BY RAND()
+        LIMIT 5
+    </select>
+    <select id="getRecommendedUser" resultType="com.lxj.myblog.domain.vo.RecommendedUserVO">
+        SELECT user_id,username,avatar FROM users
+        WHERE user_id NOT IN
+        <foreach collection="excludedUserIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+        ORDER BY RAND()
+        LIMIT 3
+    </select>
 </mapper>

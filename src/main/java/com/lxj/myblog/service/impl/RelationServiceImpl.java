@@ -8,6 +8,7 @@ import com.lxj.myblog.domain.entity.User;
 import com.lxj.myblog.domain.response.ApiResponse;
 import com.lxj.myblog.domain.vo.RelationProfileVO;
 import com.lxj.myblog.domain.vo.RelationVO;
+import com.lxj.myblog.mapper.BlogMapper;
 import com.lxj.myblog.mapper.RelationMapper;
 import com.lxj.myblog.mapper.UserMapper;
 import com.lxj.myblog.service.BlogService;
@@ -29,6 +30,8 @@ public class RelationServiceImpl implements RelationService {
     private RelationMapper relationMapper;
     @Autowired
     BlogService blogService;
+    @Autowired
+    BlogMapper blogMapper;
 
     @Override
     public RelationProfileVO getRelationProFile(BlogPageQueryDTO blogPageQueryDTO) {
@@ -86,6 +89,9 @@ public class RelationServiceImpl implements RelationService {
     @Override
     public void followRelation(Integer userId, Integer relationId) {
         relationMapper.followRelation(userId,relationId);
+        String username = userMapper.getUsernameById(userId);
+        String notice = username + " 关注了你!";
+        blogMapper.sendNotice(relationId, notice, "userFollow", null, userId);
         if(relationMapper.ifFriend(userId,relationId)==1) {
             relationMapper.addFriend(userId, relationId);
         }

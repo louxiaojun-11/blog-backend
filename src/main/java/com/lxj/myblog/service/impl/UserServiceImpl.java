@@ -6,10 +6,7 @@ import com.lxj.myblog.constant.MessageConstant;
 import com.lxj.myblog.context.BaseContext;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.User;
-import com.lxj.myblog.domain.vo.InformationVO;
-import com.lxj.myblog.domain.vo.MultiMediaVO;
-import com.lxj.myblog.domain.vo.MusicVO;
-import com.lxj.myblog.domain.vo.UserProfileVO;
+import com.lxj.myblog.domain.vo.*;
 import com.lxj.myblog.exception.AccountNotFoundException;
 import com.lxj.myblog.exception.PasswordErrorException;
 import com.lxj.myblog.mapper.UserMapper;
@@ -124,10 +121,38 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public InformationVO getInformationDetail(Integer informationId) {
+        userMapper.addInformationViews(informationId);
         return userMapper.getInformationDetail(informationId);
     }
 
+    @Override
+    public PageResult pageQueryNotice(NoticePageDTO noticePageDTO) {
+        PageHelper.startPage(noticePageDTO.getPage(), noticePageDTO.getPageSize());
+        Page<NoticeVO> page = userMapper.pageQueryNotice(noticePageDTO);
+        long total = page.getTotal();
+        List<NoticeVO> records = page.getResult();
+        return new PageResult(total, records);
+    }
 
+    @Override
+    public void updateUserLastActiveTime(Integer senderId) {
+        userMapper.updateUserLastActiveTime(senderId);
+    }
+
+    @Override
+    public void deleteNotice(Integer noticeId) {
+        userMapper.deleteNotice(noticeId);
+    }
+
+    @Override
+    public void deleteAllNotice(Integer userId) {
+        userMapper.deleteAllNotice(userId);
+    }
+
+    @Override
+    public List<Integer> getFollowingId(Integer userId) {
+        return userMapper.getFollowingId(userId);
+    }
 
 
 }

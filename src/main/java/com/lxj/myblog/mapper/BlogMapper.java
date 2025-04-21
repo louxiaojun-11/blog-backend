@@ -6,10 +6,7 @@ import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.Blog;
 import com.lxj.myblog.domain.entity.BlogViolationRecord;
 import com.lxj.myblog.domain.entity.Comment;
-import com.lxj.myblog.domain.vo.AuthorVO;
-import com.lxj.myblog.domain.vo.BlogVO;
-import com.lxj.myblog.domain.vo.MusicVO;
-import com.lxj.myblog.domain.vo.UserBlogVO;
+import com.lxj.myblog.domain.vo.*;
 import com.lxj.myblog.result.PageResult;
 import org.apache.ibatis.annotations.*;
 
@@ -76,5 +73,10 @@ public interface BlogMapper {
     void sendNotice(@Param("userId")Integer userId, @Param("content")String content,
                     @Param("type")String type, @Param("adminId")Integer adminId,
                     @Param("operationUserId") Integer operationUserId);
+    @Select("select b.* from blog_post b join user_follower u on u.following_id = b.user_Id where u.user_id = #{userId} order by b.created_at desc")
+    Page<BlogVO> getFollowingBlog(BlogPageQueryDTO blogPageQueryDTO);
 
+    List<BlogVO> getRecommendedBlogList(@Param("excludedUserIds") List<Integer> followingIdList);
+
+    List<RecommendedUserVO> getRecommendedUser(@Param("excludedUserIds") List<Integer> followingIdList);
 }

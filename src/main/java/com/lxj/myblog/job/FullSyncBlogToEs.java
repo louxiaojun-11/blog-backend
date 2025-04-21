@@ -8,14 +8,17 @@ import com.lxj.myblog.service.BlogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.stream.Collectors;
 //若要启用全量同步,去除下方@Component注解即可
-//@Component
+
 
 /**
  * 全量同步博客到 ES
  */
+//@Component
 @Slf4j
 public class FullSyncBlogToEs implements CommandLineRunner {
 

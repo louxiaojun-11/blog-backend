@@ -3,10 +3,7 @@ package com.lxj.myblog.mapper;
 import com.github.pagehelper.Page;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.User;
-import com.lxj.myblog.domain.vo.InformationVO;
-import com.lxj.myblog.domain.vo.MultiMediaVO;
-import com.lxj.myblog.domain.vo.MusicVO;
-import com.lxj.myblog.domain.vo.UserListVO;
+import com.lxj.myblog.domain.vo.*;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -75,5 +72,16 @@ public interface UserMapper {
     Page<InformationVO> pageQueryInformation(InformationPageDTO informationPageDTO);
    @Select("SELECT * FROM information WHERE information_id = #{informationId} ")
     InformationVO getInformationDetail(Integer informationId);
-
+    @Update("UPDATE information SET views = views + 0.5 WHERE information_id = #{informationId}")
+    void addInformationViews(Integer informationId);
+    @Select("SELECT * FROM notice WHERE user_id = #{userId} order by created_at desc")
+    Page<NoticeVO> pageQueryNotice(NoticePageDTO noticePageDTO);
+    @Update("UPDATE users SET last_active = NOW() WHERE user_id = #{senderId}")
+    void updateUserLastActiveTime(Integer senderId);
+    @Delete("DELETE FROM notice WHERE notice_id = #{noticeId}")
+    void deleteNotice(Integer noticeId);
+    @Delete("DELETE FROM notice WHERE user_id = #{userId}")
+    void deleteAllNotice(Integer userId);
+    @Select("SELECT following_id FROM user_follower WHERE user_id = #{userId}")
+    List<Integer> getFollowingId(Integer userId);
 }

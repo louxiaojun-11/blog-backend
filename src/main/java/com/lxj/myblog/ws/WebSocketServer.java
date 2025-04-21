@@ -71,6 +71,7 @@ public class WebSocketServer {
         //广播消息,通知所有用户
         String msg = JSON.toJSONString(R.createMsg(true, null, onlineUsers.keySet()), SerializerFeature.WriteNullStringAsEmpty);
         broadcast(msg);
+        userService.updateUserLastActiveTime(senderId);
         log.info("当前在线人数为：{}，分别是：{}", getCount(),onlineUsers.keySet());
     }
 

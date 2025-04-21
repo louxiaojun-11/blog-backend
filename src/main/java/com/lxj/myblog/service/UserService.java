@@ -6,6 +6,8 @@ import com.lxj.myblog.domain.vo.InformationVO;
 import com.lxj.myblog.domain.vo.UserProfileVO;
 import com.lxj.myblog.result.PageResult;
 
+import java.util.List;
+
 public interface UserService {
     User login(UserLoginDTO userLoginDTO);
 
@@ -30,5 +32,13 @@ public interface UserService {
     InformationVO getInformationDetail(Integer informationId);
 
 
+    PageResult pageQueryNotice(NoticePageDTO noticePageDTO);
 
+    void updateUserLastActiveTime(Integer senderId);
+
+    void deleteNotice(Integer noticeId);
+
+    void deleteAllNotice(Integer userId);
+
+    List<Integer> getFollowingId(Integer userId);
 }

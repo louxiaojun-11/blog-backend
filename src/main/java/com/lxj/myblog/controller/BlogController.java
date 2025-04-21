@@ -1,13 +1,16 @@
 package com.lxj.myblog.controller;
 
 
+import com.lxj.myblog.context.BaseContext;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.response.ApiResponse;
 import com.lxj.myblog.domain.response.SensitiveCheckResult;
 import com.lxj.myblog.domain.vo.BlogVO;
+import com.lxj.myblog.domain.vo.RecommendedUserVO;
 import com.lxj.myblog.result.PageResult;
 import com.lxj.myblog.service.BlogService;
 import com.lxj.myblog.service.SensitiveWordService;
+import com.lxj.myblog.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +27,10 @@ import java.util.Set;
 public class BlogController {
     @Autowired
     private BlogService blogService;
+
+    @Autowired
+    private UserService userService;
+
     @Autowired
     private SensitiveWordService sensitiveWordService;
     @PostMapping
@@ -80,5 +87,25 @@ public class BlogController {
     public ApiResponse<PageResult> searchBlogByPage (SearchBlogDTO searchBlogDTO){
         return ApiResponse.success(blogService.searchBlogByPage(searchBlogDTO));
     }
-
+    @GetMapping("/followingBlogList")
+    public ApiResponse<PageResult> getFollowingBlog(BlogPageQueryDTO blogPageQueryDTO){
+        Integer id = BaseContext.getCurrentId().intValue();
+        log.info("博客分页查询，参数为{}", blogPageQueryDTO);
+        PageResult pageResult =blogService.getFollowingBlog(blogPageQueryDTO);
+        return ApiResponse.success(pageResult);
+    }
+    @GetMapping("/recommended")
+    public ApiResponse <List<BlogVO>> getRecommendedBlog(Integer userId){
+        List<Integer> followingIdList = userService.getFollowingId(userId);
+        followingIdList.add(userId);
+        List<BlogVO> recommendedBlogList = blogService.getRecommendedBlogList(followingIdList);
+        return ApiResponse.success(recommendedBlogList);
+    }
+    @GetMapping("/recommendedUser")
+    public ApiResponse <List<RecommendedUserVO>>  getRecommendedUser(Integer userId){
+        List<Integer> followingIdList = userService.getFollowingId(userId);
+        followingIdList.add(userId);
+        List<RecommendedUserVO> recommendedUserList = blogService.getRecommendedUser(followingIdList);
+        return ApiResponse.success(recommendedUserList);
+    }
 }

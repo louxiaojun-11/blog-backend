@@ -7,11 +7,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.lxj.myblog.Repository.BlogEsRepository;
 import com.lxj.myblog.constant.UserViolationConstant;
 import com.lxj.myblog.context.BaseContext;
 import com.lxj.myblog.domain.dto.UserBlogViolationDTO;
 import com.lxj.myblog.domain.dto.UserPageQueryDTO;
 import com.lxj.myblog.domain.dto.UserViolationDTO;
+import com.lxj.myblog.domain.entity.Blog;
 import com.lxj.myblog.domain.entity.BlogViolationRecord;
 import com.lxj.myblog.domain.entity.R;
 import com.lxj.myblog.domain.vo.UserListVO;
@@ -43,6 +45,9 @@ public class UserManageServiceImpl implements UserManageService {
     private BlogMapper blogMapper;
     @Autowired
     private AdminMapper adminMapper;
+
+    @Autowired
+    BlogEsRepository blogEsRepository;
     @Override
     public PageResult getUserList(UserPageQueryDTO userPageQueryDTO) {
         PageHelper.startPage(userPageQueryDTO.getPage(), userPageQueryDTO.getPageSize());
@@ -87,6 +92,7 @@ public class UserManageServiceImpl implements UserManageService {
         BeanUtil.copyProperties(userBlogViolationDTO, violationRecord);
         blogMapper.insertViolationRecord(violationRecord);
         blogMapper.deleteById(blogId);
+        blogEsRepository.deleteById(String.valueOf(blogId));
         //发送下架通知给用户
        String notice = "您的博客:<"+title+">由于违规已于"+ LocalDate.now()+ "被管理员下架处理 原因：" + userBlogViolationDTO.getReason();
        blogMapper.sendNotice(userId, notice,"system",adminId,null);

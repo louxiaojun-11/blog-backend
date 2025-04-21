@@ -9,10 +9,7 @@ import com.lxj.myblog.context.BaseContext;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.Blog;
 import com.lxj.myblog.domain.entity.Comment;
-import com.lxj.myblog.domain.vo.AuthorVO;
-import com.lxj.myblog.domain.vo.BlogVO;
-import com.lxj.myblog.domain.vo.MusicVO;
-import com.lxj.myblog.domain.vo.UserBlogVO;
+import com.lxj.myblog.domain.vo.*;
 import com.lxj.myblog.mapper.BlogMapper;
 import com.lxj.myblog.mapper.UserMapper;
 import com.lxj.myblog.result.PageResult;
@@ -205,6 +202,38 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public UserBlogVO getDetail(Integer blogId) {
         return blogMapper.getDetail(blogId);
+    }
+
+    @Override
+    public PageResult getFollowingBlog(BlogPageQueryDTO blogPageQueryDTO) {
+        PageHelper.startPage(blogPageQueryDTO.getPage(), blogPageQueryDTO.getPageSize());
+        Page<BlogVO> page = blogMapper.getFollowingBlog(blogPageQueryDTO);
+        long total = page.getTotal();
+        List<BlogVO> records = page.getResult();
+        records.forEach(blogVO -> {
+            AuthorVO author = blogMapper.getAuthor(blogVO.getUserId());
+            blogVO.setAuthor(author);
+        });
+        return new PageResult(total, records);
+    }
+
+    @Override
+    public List<BlogVO> getRecommendedBlogList(List<Integer> followingIdList) {
+        List<BlogVO> BlogList =  blogMapper.getRecommendedBlogList(followingIdList);
+        BlogList.forEach(blogVO -> {
+            AuthorVO author = blogMapper.getAuthor(blogVO.getUserId());
+            blogVO.setAuthor(author);
+        });
+        return BlogList;
+    }
+
+    @Override
+    public List<RecommendedUserVO> getRecommendedUser(List<Integer> followingIdList) {
+        List<RecommendedUserVO> userList = blogMapper.getRecommendedUser(followingIdList);
+        userList.forEach(RecommendedUserVO -> {
+            RecommendedUserVO.setFollowerAmount(userMapper.getFollowerAmount(RecommendedUserVO.getUserId()));
+        });
+        return userList;
     }
 }
 

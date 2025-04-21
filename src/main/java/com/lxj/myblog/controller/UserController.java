@@ -133,4 +133,24 @@ public class UserController {
     public ApiResponse<InformationVO> getInformationDetail(@PathVariable Integer informationId){
         return ApiResponse.success(userService.getInformationDetail(informationId));
     }
+
+    @GetMapping("/notice")
+    public ApiResponse<PageResult> getNotice(NoticePageDTO noticePageDTO){
+        PageResult pageResult = userService.pageQueryNotice(noticePageDTO);
+        return ApiResponse.success(pageResult);
+    }
+    @DeleteMapping("/deleteNotice/{noticeId}")
+    public ApiResponse deleteNotice(@PathVariable Integer noticeId){
+       userService.deleteNotice(noticeId);
+        return ApiResponse.success();
+    }
+    @DeleteMapping("/deleteAllNotice/{userId}")
+    public ApiResponse deleteAllNotice( @PathVariable  Integer userId){
+        if(userId != BaseContext.getCurrentId().intValue()){
+            return ApiResponse.error("您没有权限删除该用户的信息");
+        }
+        userService.deleteAllNotice(userId);
+        return ApiResponse.success();
+    }
+
 }
