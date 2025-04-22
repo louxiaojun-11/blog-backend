@@ -2,6 +2,7 @@ package com.lxj.myblog.service.impl;
 
 import com.lxj.myblog.constant.MessageConstant;
 import com.lxj.myblog.domain.dto.AdminLoginDTO;
+import com.lxj.myblog.domain.dto.AnnouncementDTO;
 import com.lxj.myblog.domain.dto.InformationDTO;
 import com.lxj.myblog.domain.entity.Admin;
 import com.lxj.myblog.domain.entity.SensitiveWord;
@@ -15,6 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+
+import java.util.List;
+
 @Service
 @Slf4j
 public class AdminServiceImpl implements AdminService {
@@ -50,5 +54,30 @@ public class AdminServiceImpl implements AdminService {
         informationMapper.deleteInformation(informationId);
     }
 
+    @Override
+    public void postAnnouncement(AnnouncementDTO announcementDTO) {
+        if (announcementDTO.getTarget().equals("all")) {
+            List<Integer> userIds = adminMapper.getAllUserIds();
+            userIds.forEach(userId -> {
+                adminMapper.sendNotice(userId, announcementDTO.getContent(), "system",
+                        announcementDTO.getAdminId(), null);
+            });
+        }
+        else if (announcementDTO.getTarget().equals("online")) {
+            List<Integer> onlineUserIds = adminMapper.getOnlineUserIds();
+            onlineUserIds.forEach(userId -> {
+                adminMapper.sendNotice(userId, announcementDTO.getContent(), "system",
+                        announcementDTO.getAdminId(), null);
+            });
+        }
+        else{
 
-}
+            Integer userId = Integer.valueOf(announcementDTO.getTarget());
+            adminMapper.sendNotice(userId, announcementDTO.getContent(), "system",
+                    announcementDTO.getAdminId(), null);
+        }
+        }
+    }
+
+
+

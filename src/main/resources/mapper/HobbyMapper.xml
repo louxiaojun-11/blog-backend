@@ -20,6 +20,7 @@
             <if test="userId != null">
                 and group_member.user_id = #{userId}
             </if>
+                and isReviewed = 'yes'
         </where>
         <if test="userId != null">
             order by group_member.created_at desc

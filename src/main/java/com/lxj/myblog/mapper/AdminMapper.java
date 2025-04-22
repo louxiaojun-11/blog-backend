@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 @Mapper
 public interface AdminMapper {
     @Select("SELECT * FROM admin WHERE account = #{account}")
@@ -14,4 +16,8 @@ public interface AdminMapper {
     void sendNotice(@Param("userId")Integer userId, @Param("content")String content,
                     @Param("type")String type, @Param("adminId")Integer adminId,
                     @Param("operationUserId") Integer operationUserId);
+   @Select("select user_id from users")
+    List<Integer> getAllUserIds();
+   @Select("select user_id from users where status = 'online'")
+    List<Integer> getOnlineUserIds();
 }

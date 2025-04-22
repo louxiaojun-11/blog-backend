@@ -10,15 +10,15 @@ import com.github.pagehelper.PageHelper;
 import com.lxj.myblog.Repository.BlogEsRepository;
 import com.lxj.myblog.constant.UserViolationConstant;
 import com.lxj.myblog.context.BaseContext;
-import com.lxj.myblog.domain.dto.UserBlogViolationDTO;
-import com.lxj.myblog.domain.dto.UserPageQueryDTO;
-import com.lxj.myblog.domain.dto.UserViolationDTO;
+import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.Blog;
 import com.lxj.myblog.domain.entity.BlogViolationRecord;
 import com.lxj.myblog.domain.entity.R;
+import com.lxj.myblog.domain.vo.UnreviewedGroupVO;
 import com.lxj.myblog.domain.vo.UserListVO;
 import com.lxj.myblog.mapper.AdminMapper;
 import com.lxj.myblog.mapper.BlogMapper;
+import com.lxj.myblog.mapper.HobbyMapper;
 import com.lxj.myblog.mapper.UserMapper;
 import com.lxj.myblog.result.PageResult;
 import com.lxj.myblog.service.UserManageService;
@@ -45,6 +45,8 @@ public class UserManageServiceImpl implements UserManageService {
     private BlogMapper blogMapper;
     @Autowired
     private AdminMapper adminMapper;
+    @Autowired
+    private HobbyMapper hobbyMapper;
 
     @Autowired
     BlogEsRepository blogEsRepository;
@@ -100,5 +102,46 @@ public class UserManageServiceImpl implements UserManageService {
 //        Session session = webSocketServer.getSession();
 //        String msg = JSON.toJSONString(R.createMsg(true, null, notice), SerializerFeature.WriteNullStringAsEmpty);
 //        session.getBasicRemote().sendText(msg);
+    }
+
+    @Override
+    public PageResult getUnreviewedGroupList(PageQueryDTO pageQueryDTO) {
+        PageHelper.startPage(pageQueryDTO.getPage(), pageQueryDTO.getPageSize());
+        Page<UnreviewedGroupVO> page = hobbyMapper.getUnreviewedGroupList();
+        long total = page.getTotal();
+        List<UnreviewedGroupVO> records = page.getResult();
+        records.forEach(group -> {
+            group.setUsername(userMapper.getUsernameById(group.getUserId()));
+        });
+        return new PageResult(total, records);
+    }
+
+    @Override
+    public void agreeGroup(ReviewGroupDTO reviewGroupDTO) {
+        hobbyMapper.agreeGroup(reviewGroupDTO);
+        Integer adminId =BaseContext.getCurrentId().intValue();
+        String notice = "您创建的圈子: <"+reviewGroupDTO.getGroupName()+"> 已经通过审核!";
+        blogMapper.sendNotice(reviewGroupDTO.getUserId(), notice,"system",adminId,null);
+    }
+
+    @Override
+    public void disagreeGroup(ReviewGroupDTO reviewGroupDTO) {
+        hobbyMapper.deleteGroup(reviewGroupDTO);
+        Integer adminId =BaseContext.getCurrentId().intValue();
+        String notice = "您创建的圈子: <"+reviewGroupDTO.getGroupName()+"> 审核失败,请修改后重新提交审核";
+        blogMapper.sendNotice(reviewGroupDTO.getUserId(), notice,"system",adminId,null);
+    }
+
+    @Override
+    public void handleHobbyBlogViolation(UserBlogViolationDTO userBlogViolationDTO) {
+        Integer blogId = userBlogViolationDTO.getBlogId();
+        Integer adminId =BaseContext.getCurrentId().intValue();
+        Integer userId = hobbyMapper.getBlogUserId(blogId);
+        String title = hobbyMapper.getBlogTitle(blogId);
+        hobbyMapper.deleteById(blogId);
+        //发送下架通知给用户
+        String notice = "您的兴趣圈文:<"+title+"> 由于违规已于"+ LocalDate.now()+ "被管理员下架处理 原因：" + userBlogViolationDTO.getReason();
+        blogMapper.sendNotice(userId, notice,"system",adminId,null);
+//           WebSocketServer webSocketServer =  getWebSocketServer(userId);
     }
 }

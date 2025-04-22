@@ -12,7 +12,7 @@ public interface HobbyMapper {
     Page<HobbyGroupVO> groupPageQuery(HobbyGroupPageDTO hobbyGroupPageDTO);
     @Insert("insert into hobby_blog(group_id, user_id, content, title, pic1, pic2, pic3, pic4) values (#{groupId}, #{userId}, #{content}, #{title}, #{pic1}, #{pic2}, #{pic3}, #{pic4})")
     void uploadHobbyBlog(HobbyBlogDTO hobbyBlogDTO);
-    @Insert("insert into hobby_group(group_name, user_id, introduce,avatar, type) values (#{groupName}, #{userId}, #{introduce}, #{avatar}, #{type})")
+    @Insert("insert into hobby_group(group_name, user_id, introduce,avatar, type,isReviewed) values (#{groupName}, #{userId}, #{introduce}, #{avatar}, #{type},'no')")
     @Options (useGeneratedKeys = true, keyProperty = "groupId", keyColumn = "group_id")
     Integer createGroup(GroupCreateDTO groupCreateDTO);
     @Insert("insert into group_member(group_id, user_id) values (#{groupId}, #{userId})")
@@ -56,4 +56,16 @@ public interface HobbyMapper {
             "join hobby_group g on b.group_id = g.group_id " +
             "where b.user_id = #{userId} order by b.created_at desc")
     Page<UserHobbyBlogVO> userHobbyBlogPageQuery(BlogPageQueryDTO blogPageQueryDTO);
+    @Select("select group_id, group_name, avatar, introduce, type ,created_at,user_id from hobby_group where isReviewed = 'no'")
+    Page<UnreviewedGroupVO> getUnreviewedGroupList();
+   @Update("update hobby_group set isReviewed = 'yes' where group_id = #{groupId}")
+    void agreeGroup(ReviewGroupDTO reviewGroupDTO);
+   @Delete("delete from hobby_group where group_id = #{groupId}")
+    void deleteGroup(ReviewGroupDTO reviewGroupDTO);
+   @Select("select user_id from hobby_blog where blog_id = #{blogId}")
+    Integer getBlogUserId(Integer blogId);
+   @Select("select title from hobby_blog where blog_id = #{blogId}")
+    String getBlogTitle(Integer blogId);
+   @Delete("delete from hobby_blog where blog_id = #{blogId}")
+    void deleteById(Integer blogId);
 }
