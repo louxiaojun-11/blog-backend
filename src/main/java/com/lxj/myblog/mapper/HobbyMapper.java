@@ -7,6 +7,8 @@ import com.lxj.myblog.domain.entity.Comment;
 import com.lxj.myblog.domain.vo.*;
 import org.apache.ibatis.annotations.*;
 
+import java.util.Date;
+
 @Mapper
 public interface HobbyMapper {
     Page<HobbyGroupVO> groupPageQuery(HobbyGroupPageDTO hobbyGroupPageDTO);
@@ -68,4 +70,6 @@ public interface HobbyMapper {
     String getBlogTitle(Integer blogId);
    @Delete("delete from hobby_blog where blog_id = #{blogId}")
     void deleteById(Integer blogId);
+   @Select("select count(*) from hobby_blog where DATE(created_at) = DATE(#{today})")
+    Integer getBlogAmount(Date today);
 }

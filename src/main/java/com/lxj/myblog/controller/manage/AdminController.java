@@ -5,12 +5,11 @@ import com.lxj.myblog.constant.JwtClaimsConstant;
 import com.lxj.myblog.constant.MessageConstant;
 import com.lxj.myblog.domain.dto.*;
 import com.lxj.myblog.domain.entity.Admin;
-import com.lxj.myblog.domain.entity.SensitiveWord;
-import com.lxj.myblog.domain.entity.User;
 import com.lxj.myblog.domain.response.ApiResponse;
 import com.lxj.myblog.domain.vo.AdminLoginVO;
 import com.lxj.myblog.domain.vo.InformationVO;
-import com.lxj.myblog.domain.vo.UserLoginVO;
+import com.lxj.myblog.domain.vo.SystemInfoVO;
+import com.lxj.myblog.mapper.AdminMapper;
 import com.lxj.myblog.result.PageResult;
 import com.lxj.myblog.service.AdminService;
 import com.lxj.myblog.service.SensitiveWordService;
@@ -26,8 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.websocket.Session;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,6 +50,8 @@ public class AdminController {
     private AliOssUtil aliOssUtil;
     @Autowired
     private SensitiveWordService sensitiveWordService;
+    @Autowired
+    private AdminMapper adminMapper;
 
     @PostMapping("/login")
     public ApiResponse<AdminLoginVO> login(@RequestBody AdminLoginDTO adminLoginDTO) {
@@ -147,11 +151,18 @@ public class AdminController {
 
     @PostMapping("/announcement")
     public ApiResponse postAnnouncement(@RequestBody AnnouncementDTO announcementDTO) {
-        try{adminService.postAnnouncement(announcementDTO);}
-        catch(Exception e){
+        try {
+            Date today = new Date();
+            adminService.postAnnouncement(announcementDTO);
+        } catch (Exception e) {
             log.error("发布公告异常", e);
             return ApiResponse.error("发布失败,用户不存在");
         }
         return ApiResponse.success();
+    }
+    @GetMapping("/InfoController")
+    public ApiResponse<SystemInfoVO> getBlogAmount() {
+        SystemInfoVO systemInfo = adminService.getSystemInfo();
+        return ApiResponse.success(systemInfo);
     }
 }

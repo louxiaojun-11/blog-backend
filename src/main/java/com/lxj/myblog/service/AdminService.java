@@ -5,6 +5,7 @@ import com.lxj.myblog.domain.dto.AnnouncementDTO;
 import com.lxj.myblog.domain.dto.InformationDTO;
 import com.lxj.myblog.domain.entity.Admin;
 import com.lxj.myblog.domain.entity.SensitiveWord;
+import com.lxj.myblog.domain.vo.SystemInfoVO;
 
 public interface AdminService {
     Admin login(AdminLoginDTO adminLoginDTO);
@@ -15,4 +16,6 @@ public interface AdminService {
 
 
     void postAnnouncement(AnnouncementDTO announcementDTO);
+
+    SystemInfoVO getSystemInfo();
 }

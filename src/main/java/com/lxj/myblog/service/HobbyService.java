@@ -6,6 +6,8 @@ import com.lxj.myblog.domain.vo.GroupBlogUserVO;
 import com.lxj.myblog.domain.vo.GroupInfoVO;
 import com.lxj.myblog.result.PageResult;
 
+import java.util.Date;
+
 public interface HobbyService {
     PageResult groupPageQuery(HobbyGroupPageDTO hobbyGroupPageDTO);
 
@@ -39,4 +41,6 @@ public interface HobbyService {
     void addComment(CommentDTO commentDTO);
 
     PageResult userHobbyBlogPageQuery(BlogPageQueryDTO blogPageQueryDTO);
+
+
 }

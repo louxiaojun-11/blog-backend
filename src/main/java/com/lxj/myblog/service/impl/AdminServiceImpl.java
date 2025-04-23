@@ -7,6 +7,7 @@ import com.lxj.myblog.domain.dto.InformationDTO;
 import com.lxj.myblog.domain.entity.Admin;
 import com.lxj.myblog.domain.entity.SensitiveWord;
 import com.lxj.myblog.domain.entity.User;
+import com.lxj.myblog.domain.vo.SystemInfoVO;
 import com.lxj.myblog.exception.AccountNotFoundException;
 import com.lxj.myblog.exception.PasswordErrorException;
 import com.lxj.myblog.mapper.AdminMapper;
@@ -17,6 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -77,7 +82,22 @@ public class AdminServiceImpl implements AdminService {
                     announcementDTO.getAdminId(), null);
         }
         }
+
+    @Override
+    public SystemInfoVO getSystemInfo() {
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
+        // 转换为 Date（如果数据库是 timestamp 类型）
+        Date startDate = java.sql.Timestamp.valueOf(startOfDay);
+        Date endDate = java.sql.Timestamp.valueOf(endOfDay);
+        SystemInfoVO info = new SystemInfoVO();
+        info.setTodayBlogAmount(adminMapper.countTodayBlogAmount(startDate, endDate));
+        info.setTodayActiveUserAmount(adminMapper.countTodayUser(startDate, endDate));
+        info.setOnlineUserAmount(adminMapper.countOnlineUser());
+        info.setUserAmount(adminMapper.countAllUsers());
+        return info;
     }
+}
 
 
 
